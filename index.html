@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REST API Tester</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        textarea { width: 100%; height: 100px; }
+        pre { background: #f4f4f4; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h2>REST API Request Sender</h2>
+    <form id="apiForm">
+        <label>API URL:</label>
+        <input type="text" id="url" required placeholder="Enter API URL" style="width: 100%;"><br><br>
+        
+        <label>Method:</label>
+        <select id="method">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="DELETE">DELETE</option>
+        </select><br><br>
+        
+        <label>Headers (JSON format):</label>
+        <textarea id="headers" placeholder='{"Content-Type": "application/json"}'></textarea><br><br>
+        
+        <label>Request Body (for POST/PUT):</label>
+        <textarea id="body"></textarea><br><br>
+        
+        <button type="submit">Send Request</button>
+    </form>
+    
+    <h3>Response:</h3>
+    <pre id="response"></pre>
+    
+    <script>
+        document.getElementById("apiForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            
+            const url = document.getElementById("url").value;
+            const method = document.getElementById("method").value;
+            const headers = document.getElementById("headers").value ? JSON.parse(document.getElementById("headers").value) : {};
+            const body = document.getElementById("body").value ? JSON.parse(document.getElementById("body").value) : null;
+            
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: headers,
+                    body: (method === "POST" || method === "PUT") ? JSON.stringify(body) : null
+                });
+                
+                const result = await response.json();
+                document.getElementById("response").textContent = JSON.stringify(result, null, 2);
+            } catch (error) {
+                document.getElementById("response").textContent = "Error: " + error.message;
+            }
+        });
+    </script>
+</body>
+</html>
